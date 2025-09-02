@@ -12,13 +12,13 @@ class RegisterForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Contraseña', validators=[DataRequired(), Length(min=6)])
     confirm_password = PasswordField('Confirmar Contraseña', validators=[DataRequired(), EqualTo('password')])
-    rol = SelectField('Rol', choices=[('estudiante', 'Estudiante'), ('instructor', 'Instructor')], validators=[DataRequired()])
+    rol = SelectField('Rol', choices=[('estudiante', 'Estudiante'), ('profesor', 'Profesor')], validators=[DataRequired()])
     submit = SubmitField('Registrarse')
 
 class CursoForm(FlaskForm):
     nombre = StringField('Nombre del Curso', validators=[DataRequired()])
     descripcion = TextAreaField('Descripción')
-    instructor_id = SelectField('Instructor', coerce=int, validators=[DataRequired()])
+    profesor_id = SelectField('Profesor', coerce=int, validators=[DataRequired()])
     submit = SubmitField('Guardar')
 
 class MaterialForm(FlaskForm):

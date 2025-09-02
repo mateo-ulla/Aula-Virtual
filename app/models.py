@@ -14,7 +14,7 @@ class Usuario(UserMixin, db.Model):
     password_hash = db.Column(db.String(128), nullable=False)
     rol = db.Column(db.String(20), nullable=False, default='estudiante')
     cursos = db.relationship('Curso', secondary=inscripciones, back_populates='estudiantes')
-    cursos_instructor = db.relationship('Curso', backref='instructor', lazy=True, foreign_keys='Curso.instructor_id')
+    cursos_profesor = db.relationship('Curso', backref='profesor', lazy=True, foreign_keys='Curso.instructor_id')
 
     def set_password(self, password):
         self.password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
@@ -26,7 +26,7 @@ class Curso(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(100), nullable=False)
     descripcion = db.Column(db.Text, nullable=True)
-    instructor_id = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=False)
+    profesor_id = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=False)
     estudiantes = db.relationship('Usuario', secondary=inscripciones, back_populates='cursos')
     materiales = db.relationship('Material', backref='curso', lazy=True)
     evaluaciones = db.relationship('Evaluacion', backref='curso', lazy=True)

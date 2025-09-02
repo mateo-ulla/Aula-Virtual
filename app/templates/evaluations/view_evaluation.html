@@ -15,7 +15,7 @@ content %}
       </li>
       {% endfor %}
     </ul>
-    {% if current_user.rol == 'instructor' %}
+  {% if current_user.rol == 'profesor' %}
     <a
       href="{{ url_for('evaluations.add_answer', pregunta_id=pregunta.id) }}"
       class="btn btn-sm btn-primary"
@@ -25,7 +25,7 @@ content %}
   </li>
   {% endfor %}
 </ul>
-{% if current_user.rol == 'instructor' %}
+{% if current_user.rol == 'profesor' %}
 <a
   href="{{ url_for('evaluations.add_question', evaluacion_id=evaluacion.id) }}"
   class="btn btn-success"
