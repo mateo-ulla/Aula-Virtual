@@ -1,0 +1,35 @@
+{% extends 'base.html' %} {% block title %}Registro{% endblock %} {% block
+content %}
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <h2 class="mb-4">Registro</h2>
+    <form method="POST">
+      {{ form.hidden_tag() }}
+      <div class="mb-3">
+        {{ form.nombre.label(class="form-label") }} {{
+        form.nombre(class="form-control") }}
+      </div>
+      <div class="mb-3">
+        {{ form.email.label(class="form-label") }} {{
+        form.email(class="form-control") }}
+      </div>
+      <div class="mb-3">
+        {{ form.password.label(class="form-label") }} {{
+        form.password(class="form-control") }}
+      </div>
+      <div class="mb-3">
+        {{ form.confirm_password.label(class="form-label") }} {{
+        form.confirm_password(class="form-control") }}
+      </div>
+      <div class="mb-3">
+        {{ form.rol.label(class="form-label") }} {{
+        form.rol(class="form-select") }}
+      </div>
+      <div class="mb-3">{{ form.submit(class="btn btn-success") }}</div>
+    </form>
+    <p>
+      ¿Ya tienes cuenta? <a href="{{ url_for('auth.login') }}">Inicia sesión</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

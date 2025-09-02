@@ -1,0 +1,61 @@
+{% extends 'base.html' %} {% block title %}Materiales{% endblock %} {% block
+content %}
+<h2>Materiales del Curso: {{ curso.nombre }}</h2>
+<form method="POST" enctype="multipart/form-data">
+  {{ form.hidden_tag() }}
+  <div class="row">
+    <div class="col-md-4 mb-3">
+      {{ form.nombre.label(class="form-label") }} {{
+      form.nombre(class="form-control") }}
+    </div>
+    <div class="col-md-4 mb-3">
+      {{ form.tipo.label(class="form-label") }} {{
+      form.tipo(class="form-select") }}
+    </div>
+    <div class="col-md-4 mb-3">
+      {{ form.archivo.label(class="form-label") }} {{
+      form.archivo(class="form-control") }}
+    </div>
+    <div class="col-md-4 mb-3">
+      {{ form.enlace.label(class="form-label") }} {{
+      form.enlace(class="form-control") }}
+    </div>
+    <div class="col-md-4 mb-3">
+      {{ form.submit(class="btn btn-primary mt-4") }}
+    </div>
+  </div>
+</form>
+<table class="table table-bordered mt-4">
+  <thead>
+    <tr>
+      <th>Nombre</th>
+      <th>Tipo</th>
+      <th>Acción</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for material in materiales %}
+    <tr>
+      <td>{{ material.nombre }}</td>
+      <td>{{ material.tipo }}</td>
+      <td>
+        {% if material.archivo %}
+        <a
+          href="{{ url_for('materials.download_material', material_id=material.id) }}"
+          class="btn btn-sm btn-success"
+          >Descargar</a
+        >
+        {% elif material.enlace %}
+        <a
+          href="{{ material.enlace }}"
+          class="btn btn-sm btn-info"
+          target="_blank"
+          >Ver Enlace</a
+        >
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

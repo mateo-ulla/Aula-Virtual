@@ -1,0 +1,68 @@
+{% extends 'base.html' %} {% block title %}Panel de Cursos{% endblock %} {%
+block content %}
+<h2>Mis Cursos</h2>
+{% if current_user.rol == 'instructor' %}
+<a href="{{ url_for('courses.add_course') }}" class="btn btn-primary mb-3"
+  >Agregar Curso</a
+>
+{% endif %}
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Nombre</th>
+      <th>Descripción</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for curso in cursos %}
+    <tr>
+      <td>{{ curso.nombre }}</td>
+      <td>{{ curso.descripcion }}</td>
+      <td>
+        <a
+          href="{{ url_for('materials.manage_materials', curso_id=curso.id) }}"
+          class="btn btn-sm btn-info"
+          >Materiales</a
+        >
+        <a
+          href="{{ url_for('evaluations.manage_evaluations', curso_id=curso.id) }}"
+          class="btn btn-sm btn-warning"
+          >Evaluaciones</a
+        >
+        {% if current_user.rol == 'instructor' %}
+        <a
+          href="{{ url_for('courses.edit_course', curso_id=curso.id) }}"
+          class="btn btn-sm btn-secondary"
+          >Editar</a
+        >
+        <form
+          action="{{ url_for('courses.delete_course', curso_id=curso.id) }}"
+          method="POST"
+          style="display: inline"
+        >
+          <button
+            type="submit"
+            class="btn btn-sm btn-danger"
+            onclick="return confirm('¿Eliminar este curso?')"
+          >
+            Eliminar
+          </button>
+        </form>
+        {% else %}
+        <form
+          action="{{ url_for('courses.enroll_course', curso_id=curso.id) }}"
+          method="POST"
+          style="display: inline"
+        >
+          <button type="submit" class="btn btn-sm btn-success">
+            Inscribirse
+          </button>
+        </form>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

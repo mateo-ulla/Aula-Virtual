@@ -1,0 +1,16 @@
+{% extends 'base.html' %} {% block title %}Agregar Respuesta{% endblock %} {%
+block content %}
+<h2>Agregar Respuesta a la Pregunta: {{ pregunta.texto }}</h2>
+<form method="POST">
+  {{ form.hidden_tag() }}
+  <div class="mb-3">
+    {{ form.texto.label(class="form-label") }} {{
+    form.texto(class="form-control") }}
+  </div>
+  <div class="mb-3">
+    {{ form.correcta.label(class="form-check-label") }} {{
+    form.correcta(class="form-check-input") }}
+  </div>
+  <div class="mb-3">{{ form.submit(class="btn btn-success") }}</div>
+</form>
+{% endblock %}

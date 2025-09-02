@@ -1,0 +1,22 @@
+{% extends 'base.html' %} {% block title %}Calificaciones{% endblock %} {% block
+content %}
+<h2>Calificaciones para {{ evaluacion.titulo }}</h2>
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>Estudiante</th>
+      <th>Puntaje</th>
+      <th>Fecha</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for calificacion in calificaciones %}
+    <tr>
+      <td>{{ calificacion.estudiante_id }}</td>
+      <td>{{ calificacion.puntaje }}</td>
+      <td>{{ calificacion.fecha.strftime('%d/%m/%Y %H:%M') }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends 'base.html' %} {% block title %}Evaluaciones{% endblock %} {% block
+content %}
+<h2>Evaluaciones del Curso: {{ curso.nombre }}</h2>
+{% if current_user.rol == 'instructor' %}
+<form method="POST">
+  {{ form.hidden_tag() }}
+  <div class="mb-3">
+    {{ form.titulo.label(class="form-label") }} {{
+    form.titulo(class="form-control") }}
+  </div>
+  <div class="mb-3">{{ form.submit(class="btn btn-primary") }}</div>
+</form>
+{% endif %}
+<table class="table table-bordered mt-4">
+  <thead>
+    <tr>
+      <th>Título</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for evaluacion in evaluaciones %}
+    <tr>
+      <td>{{ evaluacion.titulo }}</td>
+      <td>
+        <a
+          href="{{ url_for('evaluations.view_evaluation', evaluacion_id=evaluacion.id) }}"
+          class="btn btn-sm btn-info"
+          >Ver</a
+        >
+        {% if current_user.rol == 'instructor' %}
+        <a
+          href="{{ url_for('evaluations.grade_evaluation', evaluacion_id=evaluacion.id) }}"
+          class="btn btn-sm btn-warning"
+          >Calificar</a
+        >
+        {% else %}
+        <a
+          href="{{ url_for('evaluations.take_evaluation', evaluacion_id=evaluacion.id) }}"
+          class="btn btn-sm btn-success"
+          >Rendir</a
+        >
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

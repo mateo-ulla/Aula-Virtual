@@ -1,0 +1,16 @@
+body {
+  background-color: #f8f9fa;
+}
+
+.navbar {
+  margin-bottom: 2rem;
+}
+
+.table th,
+.table td {
+  vertical-align: middle;
+}
+
+.btn {
+  min-width: 90px;
+}
