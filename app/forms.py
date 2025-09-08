@@ -16,8 +16,8 @@ class RegisterForm(FlaskForm):
     submit = SubmitField('Registrarse')
 
 class CursoForm(FlaskForm):
-    nombre = StringField('Nombre del Curso', validators=[DataRequired()])
-    descripcion = TextAreaField('Descripción')
+    titulo = StringField('Titulo del Curso', validators=[DataRequired()])
+    descripcion = TextAreaField('Descripción', validators=[Length(max=500)])
     profesor_id = SelectField('Profesor', coerce=int, validators=[DataRequired()])
     submit = SubmitField('Guardar')
 

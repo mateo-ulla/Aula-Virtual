@@ -19,8 +19,8 @@ CREATE TABLE cursos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     titulo VARCHAR(150) NOT NULL,
     descripcion TEXT,
-    instructor_id INT NOT NULL,
-    FOREIGN KEY (instructor_id) REFERENCES usuarios(id)
+    profesor_id INT NOT NULL,
+    FOREIGN KEY (profesor_id) REFERENCES usuarios(id)
 );
 
 CREATE TABLE curso_estudiante (
@@ -78,7 +78,7 @@ CREATE TABLE respuestas (
     FOREIGN KEY (opcion_id) REFERENCES opciones(id)
 );
 
-INSERT INTO roles (nombre) VALUES ('Administrador'), ('Instructor'), ('Estudiante');
+INSERT INTO roles (nombre) VALUES ('Administrador'), ('Profesor'), ('Estudiante');
 
 INSERT INTO usuarios (nombre, email, password_hash, rol_id)
 VALUES ('Admin General', 'admin@aulavirtual.com', 'HASHED_PASSWORD', 1);

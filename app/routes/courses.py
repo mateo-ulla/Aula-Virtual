@@ -23,7 +23,7 @@ def add_course():
     form.profesor_id.choices = [(current_user.id, current_user.nombre)]
     if form.validate_on_submit():
         try:
-            curso = Curso(nombre=form.nombre.data, descripcion=form.descripcion.data, profesor_id=current_user.id)
+            curso = Curso(titulo=form.titulo.data, descripcion=form.descripcion.data, profesor_id=current_user.id)
             db.session.add(curso)
             db.session.commit()
             flash('Curso creado exitosamente.', 'success')
@@ -43,7 +43,7 @@ def edit_course(curso_id):
     form.profesor_id.choices = [(current_user.id, current_user.nombre)]
     if form.validate_on_submit():
         try:
-            curso.nombre = form.nombre.data
+            curso.titulo = form.titulo.data
             curso.descripcion = form.descripcion.data
             db.session.commit()
             flash('Curso actualizado.', 'success')

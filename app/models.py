@@ -4,7 +4,7 @@ from app import db, bcrypt
 
 inscripciones = db.Table('inscripciones',
     db.Column('estudiante_id', db.Integer, db.ForeignKey('usuario.id')),
-    db.Column('curso_id', db.Integer, db.ForeignKey('curso.id'))
+    db.Column('curso_id', db.Integer, db.ForeignKey('cursos.id'))
 )
 
 class Usuario(UserMixin, db.Model):
@@ -14,7 +14,7 @@ class Usuario(UserMixin, db.Model):
     password_hash = db.Column(db.String(128), nullable=False)
     rol = db.Column(db.String(20), nullable=False, default='estudiante')
     cursos = db.relationship('Curso', secondary=inscripciones, back_populates='estudiantes')
-    cursos_profesor = db.relationship('Curso', backref='profesor', lazy=True, foreign_keys='Curso.instructor_id')
+    cursos_profesor = db.relationship('Curso', backref='profesor', lazy=True, foreign_keys='Curso.profesor_id')
 
     def set_password(self, password):
         self.password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
@@ -23,8 +23,9 @@ class Usuario(UserMixin, db.Model):
         return bcrypt.check_password_hash(self.password_hash, password)
 
 class Curso(db.Model):
+    __tablename__ = 'cursos'
     id = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(100), nullable=False)
+    titulo = db.Column(db.String(150), nullable=False)
     descripcion = db.Column(db.Text, nullable=True)
     profesor_id = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=False)
     estudiantes = db.relationship('Usuario', secondary=inscripciones, back_populates='cursos')
@@ -38,13 +39,13 @@ class Material(db.Model):
     archivo = db.Column(db.LargeBinary, nullable=True)
     enlace = db.Column(db.String(255), nullable=True)
     mimetype = db.Column(db.String(64), nullable=True)
-    curso_id = db.Column(db.Integer, db.ForeignKey('curso.id'), nullable=False)
+    curso_id = db.Column(db.Integer, db.ForeignKey('cursos.id'), nullable=False)
     fecha_subida = db.Column(db.DateTime, default=datetime.utcnow)
 
 class Evaluacion(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     titulo = db.Column(db.String(120), nullable=False)
-    curso_id = db.Column(db.Integer, db.ForeignKey('curso.id'), nullable=False)
+    curso_id = db.Column(db.Integer, db.ForeignKey('cursos.id'), nullable=False)
     preguntas = db.relationship('Pregunta', backref='evaluacion', lazy=True)
     fecha_creacion = db.Column(db.DateTime, default=datetime.utcnow)
 
