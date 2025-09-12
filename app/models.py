@@ -3,11 +3,12 @@ from flask_login import UserMixin
 from app import db, bcrypt
 
 inscripciones = db.Table('inscripciones',
-    db.Column('estudiante_id', db.Integer, db.ForeignKey('usuario.id')),
+    db.Column('estudiante_id', db.Integer, db.ForeignKey('usuarios.id')),
     db.Column('curso_id', db.Integer, db.ForeignKey('cursos.id'))
 )
 
 class Usuario(UserMixin, db.Model):
+    __tablename__ = 'usuarios'
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(64), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
@@ -27,7 +28,7 @@ class Curso(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     titulo = db.Column(db.String(150), nullable=False)
     descripcion = db.Column(db.Text, nullable=True)
-    profesor_id = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=False)
+    profesor_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False)
     estudiantes = db.relationship('Usuario', secondary=inscripciones, back_populates='cursos')
     materiales = db.relationship('Material', backref='curso', lazy=True)
     evaluaciones = db.relationship('Evaluacion', backref='curso', lazy=True)
@@ -63,7 +64,7 @@ class Respuesta(db.Model):
 
 class Calificacion(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    estudiante_id = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=False)
+    estudiante_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False)
     evaluacion_id = db.Column(db.Integer, db.ForeignKey('evaluacion.id'), nullable=False)
     puntaje = db.Column(db.Float, nullable=False)
     fecha = db.Column(db.DateTime, default=datetime.utcnow)
