@@ -10,10 +10,14 @@ class LoginForm(FlaskForm):
 class RegisterForm(FlaskForm):
     nombre = StringField('Nombre', validators=[DataRequired(), Length(min=2, max=64)])
     email = StringField('Email', validators=[DataRequired(), Email()])
-    password = PasswordField('Contraseña', validators=[DataRequired(), Length(min=6)])
+    password = PasswordField('Contraseña', validators=[DataRequired(), Length(min=4)])
     confirm_password = PasswordField('Confirmar Contraseña', validators=[DataRequired(), EqualTo('password')])
     rol = SelectField('Rol', choices=[('estudiante', 'Estudiante'), ('profesor', 'Profesor')], validators=[DataRequired()])
     submit = SubmitField('Registrarse')
+
+    def validate_email(self, field):
+        if '@' not in field.data:
+            raise ValidationError('El email debe contener un @.')
 
 class CursoForm(FlaskForm):
     titulo = StringField('Titulo del Curso', validators=[DataRequired()])

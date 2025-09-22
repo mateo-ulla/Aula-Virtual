@@ -19,9 +19,10 @@ def login():
         user = Usuario.query.filter_by(email=form.email.data).first()
         if user and user.check_password(form.password.data):
             login_user(user)
+            flash('Inicio de sesión exitoso.', 'success')
             return redirect(url_for('courses.dashboard'))
         else:
-            flash('Credenciales incorrectas', 'danger')
+            flash('Credenciales inválidas.', 'danger')
     return render_template('auth/login.html', form=form)
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
@@ -34,7 +35,7 @@ def register():
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
-        flash('Registro exitoso. Ahora puedes iniciar sesión.', 'success')
+        flash('Registro exitoso.', 'success')
         return redirect(url_for('auth.login'))
     return render_template('auth/register.html', form=form)
 

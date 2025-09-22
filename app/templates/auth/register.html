@@ -14,22 +14,22 @@ content %}
         form.email(class="form-control") }}
       </div>
       <div class="mb-3">
-        {{ form.password.label(class="form-label") }} {{
-        form.password(class="form-control") }}
+        {{ form.password.label(class="form-label") }}
+        {{ form.password(class="form-control") }}
       </div>
       <div class="mb-3">
-        {{ form.confirm_password.label(class="form-label") }} {{
-        form.confirm_password(class="form-control") }}
+        {{ form.confirm_password.label(class="form-label") }}
+        {{ form.confirm_password(class="form-control") }}
       </div>
       <div class="mb-3">
         {{ form.rol.label(class="form-label") }} {{
         form.rol(class="form-select") }}
       </div>
-      <div class="mb-3">{{ form.submit(class="btn btn-success") }}</div>
+      <div class="d-grid gap-2">
+        {{ form.submit(class="btn btn-success btn-block") }}
+      </div>
     </form>
-    <p>
-      ¿Ya tienes cuenta? <a href="{{ url_for('auth.login') }}">Inicia sesión</a>
-    </p>
+  </div>
   </div>
 </div>
 {% endblock %}

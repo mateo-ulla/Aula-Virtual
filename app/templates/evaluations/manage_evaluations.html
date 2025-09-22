@@ -28,7 +28,7 @@ content %}
           class="btn btn-sm btn-info"
           >Ver</a
         >
-  {% if current_user.rol == 'profesor' %}
+        {% if current_user.rol == 'profesor' %}
         <a
           href="{{ url_for('evaluations.grade_evaluation', evaluacion_id=evaluacion.id) }}"
           class="btn btn-sm btn-warning"

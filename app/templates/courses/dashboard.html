@@ -1,43 +1,43 @@
-{% extends 'base.html' %} {% block title %}Panel de Cursos{% endblock %} {%
-block content %}
-<h2>Mis Cursos</h2>
-{% if current_user.rol == 'profesor' %}
-<a href="{{ url_for('courses.add_course') }}" class="btn btn-primary mb-3"
-  >Agregar Curso</a
->
-{% endif %}
-<table class="table table-striped">
-  <thead>
-    <tr>
-      <th>Nombre</th>
-      <th>Descripción</th>
-      <th>Acciones</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for curso in cursos %}
-    <tr>
-      <td>{{ curso.nombre }}</td>
-      <td>{{ curso.descripcion }}</td>
-      <td>
-        <a
-          href="{{ url_for('materials.manage_materials', curso_id=curso.id) }}"
-          class="btn btn-sm btn-info"
-          >Materiales</a
-        >
-        <a
-          href="{{ url_for('evaluations.manage_evaluations', curso_id=curso.id) }}"
-          class="btn btn-sm btn-warning"
-          >Evaluaciones</a
-        >
+{% extends 'base.html' %}
+{% block title %}Panel de Cursos{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2 class="mb-0">Panel de Cursos</h2>
   {% if current_user.rol == 'profesor' %}
-        <a
-          href="{{ url_for('courses.edit_course', curso_id=curso.id) }}"
-          class="btn btn-sm btn-secondary"
-          >Editar</a
-        >
-        <form
-          action="{{ url_for('courses.delete_course', curso_id=curso.id) }}"
+    <a href="{{ url_for('courses.add_course') }}" class="btn btn-primary">Agregar Curso</a>
+  {% endif %}
+</div>
+<div class="row">
+  {% for curso in cursos %}
+    <div class="col-md-6 col-lg-4 mb-4">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title">{{ curso.titulo }}</h5>
+          <p class="card-text">{{ curso.descripcion }}</p>
+          <div class="mt-auto">
+            {% if current_user.rol == 'profesor' and curso.profesor_id == current_user.id %}
+              <a href="{{ url_for('materials.manage_materials', curso_id=curso.id) }}" class="btn btn-info btn-sm me-2">Gestionar Contenido</a>
+              <a href="{{ url_for('evaluations.manage_evaluations', curso_id=curso.id) }}" class="btn btn-warning btn-sm me-2">Gestionar Evaluaciones</a>
+              <a href="{{ url_for('courses.edit_course', curso_id=curso.id) }}" class="btn btn-secondary btn-sm me-2">Editar Curso</a>
+              <form action="{{ url_for('courses.delete_course', curso_id=curso.id) }}" method="post" style="display:inline;">
+                <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+              </form>
+              <a href="#" class="btn btn-outline-dark btn-sm me-2">Calificar/Comentar</a>
+            {% elif current_user.rol == 'estudiante' %}
+              <a href="{{ url_for('materials.manage_materials', curso_id=curso.id) }}" class="btn btn-info btn-sm me-2">Ver Contenido</a>
+              <a href="{{ url_for('evaluations.take_evaluation', curso_id=curso.id) }}" class="btn btn-warning btn-sm me-2">Resolver Evaluaciones</a>
+              <form action="{{ url_for('courses.enroll_course', curso_id=curso.id) }}" method="post" style="display:inline;">
+                <button type="submit" class="btn btn-success btn-sm">Inscribirse</button>
+              </form>
+              <a href="#" class="btn btn-outline-dark btn-sm me-2">Comentar</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}
           method="POST"
           style="display: inline"
         >

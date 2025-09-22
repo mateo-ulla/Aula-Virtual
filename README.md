@@ -84,15 +84,14 @@ Aula Virtual/
 
 ## Dependencias principales
 
-- Flask
-- Flask-Login
-- Flask-WTF
-- Flask-Migrate
-- Flask-SQLAlchemy
-- Flask-Bcrypt
-- Flask-Uploads
-- mysqlclient
-- python-dotenv
-- WTForms
-- email_validator
-- Bootstrap
+Flask
+Flask-Login
+Flask-WTF
+Flask-Migrate
+Flask-SQLAlchemy
+Flask-Bcrypt
+Flask-Uploads
+mysqlclient
+python-dotenv
+WTForms
+email_validator
