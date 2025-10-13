@@ -35,7 +35,7 @@ import os
 app = Flask(__name__)
 app.secret_key = 'clave_secreta_segura'
 
-# Ruta para servir archivos subidos
+# ruta para mostrar archivos subidos
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
     uploads_dir = os.path.join(os.path.dirname(__file__), '..', '..', 'uploads')
@@ -47,7 +47,7 @@ def index():
     clases = []
     if 'user' in session:
         if session['user']['tipo'] == 'alumno':
-            # Solo materias a las que está inscripto el alumno
+            # solo materias a las que esta inscripto el alumno
             cursor.execute("""
                 SELECT c.Cod_materia, c.Nombre_materia, p.Nombre AS docente_nombre, p.Apellido AS docente_apellido
                 FROM Clases c
@@ -57,7 +57,7 @@ def index():
             """, (session['user']['dni'],))
             clases = cursor.fetchall()
         elif session['user']['tipo'] == 'profesor':
-            # El profesor ve solo sus propias materias
+            # el profesor ve solo sus propias materias
             cursor.execute("""
                 SELECT c.Cod_materia, c.Nombre_materia, p.Nombre AS docente_nombre, p.Apellido AS docente_apellido
                 FROM Clases c
@@ -66,10 +66,10 @@ def index():
             """, (session['user']['dni'],))
             clases = cursor.fetchall()
         else:
-            # Otro tipo de usuario, mostrar nada
+            # otro tipo de usuario, mostrar nada
             clases = []
     else:
-        # No logueado, mostrar todas las materias
+        # no logueado, mostrar todas las materias
         cursor.execute("""
             SELECT c.Cod_materia, c.Nombre_materia, p.Nombre AS docente_nombre, p.Apellido AS docente_apellido
             FROM Clases c
@@ -85,7 +85,7 @@ def index_docente():
     if 'user' not in session or session['user']['tipo'] != 'profesor':
         return redirect(url_for('login'))
     cursor = connection.cursor()
-    # Solo las materias del profesor logueado
+    # solo las materias del profesor logueado
     cursor.execute("SELECT c.Cod_materia, c.Nombre_materia, c.docente_acargo, p.Nombre AS docente_nombre, p.Apellido AS docente_apellido FROM Clases c LEFT JOIN Profesores p ON c.docente_acargo = p.DNI WHERE c.docente_acargo = %s", (session['user']['dni'],))
     clases = cursor.fetchall()
     cursor.close()
@@ -96,25 +96,25 @@ def clase(cod_materia):
     if 'user' not in session:
         return redirect(url_for('login'))
     cursor = connection.cursor()
-    # Verificar que el usuario esté inscripto en la materia
+    # verificar que el usuario este inscripto en la materia
     cursor.execute("SELECT * FROM Materias_alumno WHERE Cod_materia = %s AND alumno_dni = %s", (cod_materia, session['user']['dni']))
     inscripto = cursor.fetchone()
     if not inscripto and session['user']['tipo'] != 'profesor':
         cursor.close()
         return "No tienes acceso a esta clase", 403
-    # Obtener info de la clase
+    # obtener info de la clase
     cursor.execute("SELECT * FROM Clases WHERE Cod_materia = %s", (cod_materia,))
     clase = cursor.fetchone()
-    # Obtener materiales
+    # obtener materiales
     cursor.execute("SELECT * FROM Materiales WHERE Cod_materia = %s ORDER BY fecha DESC", (cod_materia,))
     materiales = cursor.fetchall()
-    # Obtener mensajes
+    # obtener mensajes
     cursor.execute("SELECT m.*, a.Nombre AS autor_nombre, a.Apellido AS autor_apellido, p.Nombre AS profe_nombre, p.Apellido AS profe_apellido FROM Mensajes_clase m LEFT JOIN Alumnos a ON m.autor_dni = a.DNI AND m.autor_tipo = 'alumno' LEFT JOIN Profesores p ON m.autor_dni = p.DNI AND m.autor_tipo = 'profesor' WHERE m.Cod_materia = %s ORDER BY m.fecha DESC", (cod_materia,))
     mensajes = cursor.fetchall()
-    # Obtener examenes
+    # obtener examenes
     cursor.execute("SELECT * FROM evaluaciones WHERE Cod_materia = %s ORDER BY fecha DESC", (cod_materia,))
     examenes = cursor.fetchall()
-    # Procesar envío de mensaje
+    # procesar envio de mensaje
     if request.method == 'POST' and 'mensaje' in request.form:
         mensaje = request.form['mensaje']
         cursor.execute("INSERT INTO Mensajes_clase (Cod_materia, autor_dni, autor_tipo, mensaje) VALUES (%s, %s, %s, %s)", (cod_materia, session['user']['dni'], session['user']['tipo'], mensaje))
@@ -129,14 +129,14 @@ def clase_docente(cod_materia):
     if 'user' not in session or session['user']['tipo'] != 'profesor':
         return redirect(url_for('login'))
     cursor = connection.cursor()
-    # Obtener datos de la clase
+    # obtener datos de la clase
     cursor.execute("SELECT * FROM Clases WHERE Cod_materia = %s AND docente_acargo = %s", (cod_materia, session['user']['dni']))
     clase = cursor.fetchone()
     if not clase:
         cursor.close()
         return "No autorizado", 403
 
-    # Procesar subida de material o mensaje
+    # procesar subida de material o mensaje
     if request.method == 'POST':
         if 'subir_material' in request.form:
             titulo = request.form['titulo']
@@ -159,19 +159,19 @@ def clase_docente(cod_materia):
             cursor.close()
             return redirect(url_for('clase_docente', cod_materia=cod_materia))
 
-    # Materiales
+    # materiales
     cursor.execute("SELECT * FROM Materiales WHERE Cod_materia = %s ORDER BY fecha DESC", (cod_materia,))
     materiales = cursor.fetchall()
-    # Mensajes
+    # mensajes
     cursor.execute("SELECT m.*, a.Nombre AS autor_nombre, a.Apellido AS autor_apellido, p.Nombre AS profe_nombre, p.Apellido AS profe_apellido FROM Mensajes_clase m LEFT JOIN Alumnos a ON m.autor_dni = a.DNI AND m.autor_tipo = 'alumno' LEFT JOIN Profesores p ON m.autor_dni = p.DNI AND m.autor_tipo = 'profesor' WHERE m.Cod_materia = %s ORDER BY m.fecha DESC", (cod_materia,))
     mensajes = cursor.fetchall()
-    # Exámenes
+    # examenes
     cursor.execute("SELECT * FROM evaluaciones WHERE Cod_materia = %s ORDER BY fecha DESC", (cod_materia,))
     examenes = cursor.fetchall()
     cursor.close()
     return render_template("clase_docente.html", clase=clase, materiales=materiales, mensajes=mensajes, examenes=examenes)
 
-# Agregar examen
+# agregar examen
 @app.route("/agregar_examen/<cod_materia>", methods=["GET", "POST"], endpoint="crear_examen")
 def agregar_examen(cod_materia):
     if 'user' not in session or session['user']['tipo'] != 'profesor':
@@ -187,7 +187,7 @@ def agregar_examen(cod_materia):
         return redirect(url_for('clase_docente', cod_materia=cod_materia))
     return render_template("modificar_examen.html", accion='Agregar', cod_materia=cod_materia, examen=None)
 
-# Modificar examen
+# modificar examen
 @app.route("/modificar_examen/<int:id_examen>/<cod_materia>", methods=["GET", "POST"])
 def modificar_examen(id_examen, cod_materia):
     if 'user' not in session or session['user']['tipo'] != 'profesor':
@@ -209,7 +209,7 @@ def modificar_examen(id_examen, cod_materia):
     cursor.close()
     return render_template("modificar_examen.html", accion='Modificar', cod_materia=cod_materia, examen=examen)
 
-# Eliminar examen
+# eliminar examen
 @app.route("/eliminar_examen/<int:id_examen>/<cod_materia>", methods=["POST"])
 def eliminar_examen(id_examen, cod_materia):
     if 'user' not in session or session['user']['tipo'] != 'profesor':
@@ -220,13 +220,13 @@ def eliminar_examen(id_examen, cod_materia):
     cursor.close()
     return redirect(url_for('clase_docente', cod_materia=cod_materia))
     cursor = connection.cursor()
-    # Verificar que el profesor es el dueño de la materia
+    # verificar que el profesor es el dueño de la materia
     cursor.execute("SELECT * FROM Clases WHERE Cod_materia = %s AND docente_acargo = %s", (cod_materia, session['user']['dni']))
     clase = cursor.fetchone()
     if not clase:
         cursor.close()
         return "No tienes acceso a esta clase", 403
-    # Procesar subida de material
+    # procesar subida de material
     if request.method == 'POST':
         if 'subir_material' in request.form:
             titulo = request.form['titulo']
@@ -355,16 +355,16 @@ def add_materia():
         return render_template("add_materia.html")
 
 
-# Eliminar materia (profesor) - borra también inscripciones de alumnos
+# eliminar materia (profesor) - borra tambien inscripciones de alumnos
 @app.route("/delete_curso/<cod_materia>", methods=["POST"])
 def delete_curso(cod_materia):
     if 'user' not in session or session['user']['tipo'] != 'profesor':
         return redirect(url_for('login'))
     cursor = connection.cursor()
     try:
-        # Eliminar inscripciones de alumnos primero
+        # eliminar inscripciones de alumnos primero
         cursor.execute("DELETE FROM Materias_alumno WHERE Cod_materia = %s", (cod_materia,))
-        # Eliminar la materia
+        # eliminar la materia
         cursor.execute("DELETE FROM Clases WHERE Cod_materia = %s", (cod_materia,))
         connection.commit()
     except Exception as ex:
@@ -373,7 +373,7 @@ def delete_curso(cod_materia):
         cursor.close()
     return redirect(url_for('index_docente'))
 
-# Ruta para que el alumno salga de la clase
+# ruta para que el alumno salga de la clase
 @app.route("/salir_clase/<cod_materia>", methods=["POST"])
 def salir_clase(cod_materia):
     if 'user' not in session or session['user']['tipo'] != 'alumno':
@@ -393,7 +393,7 @@ def logout():
     session.clear()
     return redirect(url_for('index'))
 
-# Modifica login para guardar sesión
+# modifica login para guardar sesion
 @app.route("/login", methods=["GET", "POST"])
 def login():
     error = None
@@ -458,7 +458,7 @@ def modificar_materia(cod_materia):
     if 'user' not in session or session['user']['tipo'] != 'profesor':
         return redirect(url_for('login'))
     cursor = connection.cursor()
-    # Obtener datos actuales de la materia
+    # obtener datos actuales de la materia
     cursor.execute("SELECT * FROM Clases WHERE Cod_materia = %s AND docente_acargo = %s", (cod_materia, session['user']['dni']))
     clase = cursor.fetchone()
     if not clase:
@@ -473,13 +473,13 @@ def modificar_materia(cod_materia):
     cursor.close()
     return render_template("modificar_materia.html", clase=clase)
 
-# Ruta para eliminar material didáctico (solo profesor dueño de la materia)
+# ruta para eliminar material didactico (solo profesor dueño de la materia)
 @app.route("/eliminar_material/<int:id_material>/<cod_materia>", methods=["POST"])
 def eliminar_material(id_material, cod_materia):
     if 'user' not in session or session['user']['tipo'] != 'profesor':
         return redirect(url_for('login'))
     cursor = connection.cursor()
-    # Verificar que el material pertenece a una materia del profesor
+    # verificar que el material pertenece a una materia del profesor
     cursor.execute("""
         SELECT m.id FROM Materiales m
         JOIN Clases c ON m.Cod_materia = c.Cod_materia
@@ -489,19 +489,19 @@ def eliminar_material(id_material, cod_materia):
     if not material:
         cursor.close()
         return "No autorizado", 403
-    # Eliminar material
+    # eliminar material
     cursor.execute("DELETE FROM Materiales WHERE id = %s", (id_material,))
     connection.commit()
     cursor.close()
     return redirect(url_for('clase_docente', cod_materia=cod_materia))
 
-# Ruta para modificar material didáctico (formulario y acción)
+# ruta para modificar material didactico (formulario y accion)
 @app.route("/modificar_material/<int:id_material>/<cod_materia>", methods=["GET", "POST"])
 def modificar_material(id_material, cod_materia):
     if 'user' not in session or session['user']['tipo'] != 'profesor':
         return redirect(url_for('login'))
     cursor = connection.cursor()
-    # Verificar que el material pertenece a una materia del profesor
+    # verificar que el material pertenece a una materia del profesor
     cursor.execute("""
         SELECT m.* FROM Materiales m
         JOIN Clases c ON m.Cod_materia = c.Cod_materia
@@ -515,7 +515,7 @@ def modificar_material(id_material, cod_materia):
         titulo = request.form.get('titulo')
         descripcion = request.form.get('descripcion')
         enlace = request.form.get('enlace')
-        # No se permite cambiar el archivo aquí (solo texto y enlace)
+        # no se permite cambiar el archivo aqui (solo texto y enlace)
         cursor.execute("""
             UPDATE Materiales SET titulo=%s, descripcion=%s, enlace=%s WHERE id=%s
         """, (titulo, descripcion, enlace, id_material))
