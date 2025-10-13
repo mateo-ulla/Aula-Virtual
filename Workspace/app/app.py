@@ -35,6 +35,9 @@ import os
 app = Flask(__name__)
 app.secret_key = 'clave_secreta_segura'
 
+INT_MIN = 0
+INT_MAX = 2147483647
+
 # ruta para mostrar archivos subidos
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
@@ -270,6 +273,13 @@ def admin_docentes():
         mail = request.form.get("mail")
         telefono = request.form.get("telefono")
         contraseña = request.form.get("contraseña")
+        # validacion de dni y telefono numericos y rango
+        if not dni.isdigit():
+            return render_template("admin_docentes.html", mensaje="El DNI debe ser numerico.")
+        if not telefono.isdigit():
+            return render_template("admin_docentes.html", mensaje="El telefono debe ser numerico.")
+        if not (INT_MIN < int(dni) <= INT_MAX):
+            return render_template("admin_docentes.html", mensaje="El DNI debe ser un numero entre 1 y 2147483647.")
         try:
             cursor = connection.cursor()
             sql = "INSERT INTO Profesores (DNI, Nombre, Apellido, Mail, Telefono, Contraseña) VALUES (%s, %s, %s, %s, %s, %s)"
@@ -282,7 +292,6 @@ def admin_docentes():
             return render_template("page_admin.html", mensaje=msg)
     return render_template("admin_docentes.html")
 
-
 @app.route("/admin_alumnos", methods=["GET", "POST"])
 def admin_alumnos():
     if request.method == "POST":
@@ -293,6 +302,13 @@ def admin_alumnos():
         mail = request.form.get("mail")
         telefono = request.form.get("telefono")
         contraseña = request.form.get("contrasena") 
+        # validacion de dni y telefono numericos y rango
+        if not dni.isdigit():
+            return render_template("admin_alumnos.html", mensaje="El DNI debe ser numerico.")
+        if not telefono.isdigit():
+            return render_template("admin_alumnos.html", mensaje="El telefono debe ser numerico.")
+        if not (INT_MIN < int(dni) <= INT_MAX):
+            return render_template("admin_alumnos.html", mensaje="El DNI debe ser un numero entre 1 y 2147483647.")
         try:
             cursor = connection.cursor()
             sql = "INSERT INTO Alumnos (DNI, Nombre, Apellido, Curso, Mail, Telefono, Contraseña) VALUES (%s, %s, %s, %s, %s, %s, %s)"
@@ -335,19 +351,19 @@ def add_materia():
             cod = request.form['cod_materia']
             alumno_dni = session['user']['dni']
             cursor = connection.cursor()
-            # Verifica que la materia exista
+            # verifica que la materia exista
             cursor.execute("SELECT * FROM Clases WHERE Cod_materia = %s", (cod,))
             materia = cursor.fetchone()
             if not materia:
                 cursor.close()
                 return "El código de materia no existe."
-            # Verifica que el alumno no esté ya inscripto
+            # verifica que el alumno no este ya inscripto
             cursor.execute("SELECT * FROM Materias_alumno WHERE Cod_materia = %s AND alumno_dni = %s", (cod, alumno_dni))
             ya_inscripto = cursor.fetchone()
             if ya_inscripto:
                 cursor.close()
                 return "Ya estás inscripto en esta materia."
-            # Inscribe al alumno
+            # inscribe al alumno
             cursor.execute("INSERT INTO Materias_alumno (Cod_materia, alumno_dni) VALUES (%s, %s)", (cod, alumno_dni))
             connection.commit()
             cursor.close()
@@ -432,6 +448,16 @@ def signup():
         tipo_usuario = request.form["tipo_usuario"]
         mail = request.form["mail"]
         telefono = request.form["telefono"]
+        # validacion de dni y telefono numericos y rango
+        if not dni.isdigit():
+            error = "El DNI debe ser numerico."
+            return render_template("signup.html", error=error)
+        if not telefono.isdigit():
+            error = "El telefono debe ser numerico."
+            return render_template("signup.html", error=error)
+        if not (INT_MIN < int(dni) <= INT_MAX):
+            error = "El DNI debe ser un numero entre 1 y 2147483647."
+            return render_template("signup.html", error=error)
         cursor = connection.cursor()
         if tipo_usuario == "alumno":
             curso = request.form["curso"]
@@ -441,7 +467,7 @@ def signup():
                 connection.commit()
                 return redirect(url_for("login"))
             except pymysql.IntegrityError:
-                error = "El DNI ya está registrado como alumno."
+                error = "El DNI ya esta registrado como alumno."
         elif tipo_usuario == "profesor":
             try:
                 cursor.execute("INSERT INTO Profesores (DNI, Nombre, Apellido, Mail, Telefono, Contraseña) VALUES (%s, %s, %s, %s, %s, %s)",
@@ -449,7 +475,7 @@ def signup():
                 connection.commit()
                 return redirect(url_for("login"))
             except pymysql.IntegrityError:
-                error = "El DNI ya está registrado como profesor."
+                error = "El DNI ya esta registrado como profesor."
         cursor.close()
     return render_template("signup.html", error=error)
 
