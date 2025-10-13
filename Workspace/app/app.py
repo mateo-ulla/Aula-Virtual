@@ -11,7 +11,7 @@ def connect_to_db():
             host='localhost',
             port=3306,  
             user='root',
-            password='1234',
+            password='root',
             database='Classroom',
             ssl_disabled=True,
             cursorclass=pymysql.cursors.DictCursor
